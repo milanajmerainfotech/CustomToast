@@ -19,10 +19,6 @@ public class CustomToast {
         View view = LayoutInflater.from(context).inflate(CUSTOM_TOAST_LAYOUT, null);
         TextView textView = view.findViewById(R.id.text_toast);
         textView.setText(text);
-        return view;
-    }
-
-    public void showCustomToast(){
         view.setVisibility(View.VISIBLE);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -31,6 +27,11 @@ public class CustomToast {
                 view.setVisibility(View.GONE);
             }
         },1000);
+        return view;
+    }
+
+    public void showCustomToast(){
+
     }
 
 }
