@@ -2,6 +2,7 @@ package com.android.demoliabrery;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ public class CustomToast {
     }
 
     public static View setCustomeToastLayout(Context context, CharSequence text){
+        Log.d("MilanChecking", "Comes Fomr Class");
         View view = LayoutInflater.from(context).inflate(CUSTOM_TOAST_LAYOUT, null);
         TextView textView = view.findViewById(R.id.text_toast);
         textView.setText(text);
@@ -27,6 +29,7 @@ public class CustomToast {
                 view.setVisibility(View.GONE);
             }
         },1000);
+
         return view;
     }
 
