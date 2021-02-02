@@ -7,18 +7,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.demoliabrery.CustomToast;
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,25 +39,27 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-        socket.connect();
-
+        /*WebView webView = findViewById(R.id.webView);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setAppCacheEnabled(true);
+        webView.getSettings().setLoadsImagesAutomatically(true);
+        webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setJavaScriptEnabled(true);*/
 
         Button button = findViewById(R.id.button_clic);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                socket.on("message", onNewMessage);
+                socket.on("message", getOnNewMessage);
                 socket.emit("message", "New Message Sent.");
             }
         });
     }
-    Activity context = MainActivity.this;
-    public Emitter.Listener onNewMessage = args -> {
-        Log.d("ExceptionMilan", "Cliled");
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+    public Emitter.Listener getOnNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(() -> {
                 JSONObject data = (JSONObject) args[0];
                 String username;
                 String message;
@@ -70,14 +75,15 @@ public class MainActivity extends AppCompatActivity {
                 // add the message to view
                 //addMessage(username, message);
                 Toast.makeText(MainActivity.this, message + " (Received)", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+            Log.d("ExceptionMilan", "Cliled");
+        }
     };
 
     @Override
     protected void onDestroy() {
         socket.disconnect();
-        socket.off("message", onNewMessage);
+        socket.off("message", getOnNewMessage);
         Toast.makeText(this, "User Disconnected To Socket IO", Toast.LENGTH_SHORT).show();
         super.onDestroy();
     }
